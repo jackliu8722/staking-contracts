@@ -5,7 +5,7 @@ on:
 
 jobs:
   run-format:
-    runs-on: ubuntu-latest
+    runs-on: fixed-egress-4c-16g
 
     steps:
       - uses: actions/checkout@v2
