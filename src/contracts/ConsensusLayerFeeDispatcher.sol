@@ -66,17 +66,22 @@ contract ConsensusLayerFeeDispatcher is IFeeDispatcher {
             revert ZeroBalanceWithdrawal();
         }
 
-        bool exitRequested = stakingContract.getExitRequestedFromRoot(_publicKeyRoot);
-        bool withdrawn = stakingContract.getWithdrawnFromPublicKeyRoot(_publicKeyRoot);
+        // bool exitRequested = stakingContract.getExitRequestedFromRoot(_publicKeyRoot);
+        // bool withdrawn = stakingContract.getWithdrawnFromPublicKeyRoot(_publicKeyRoot);
 
         uint256 nonExemptBalance = balance;
+        uint256 depositSize = stakingContract.getDepositSize();
 
-        if (exitRequested && balance >= 31 ether && !withdrawn) {
+        if (
+            stakingContract.getExitRequestedFromRoot(_publicKeyRoot) && 
+            balance >= (depositSize - 1 ether) && 
+            !stakingContract.getWithdrawnFromPublicKeyRoot(_publicKeyRoot)
+        ) {
             // If the skimmed rewards were withdrawn and the validator then underperformed
-            // an healthy exit can be slightly lower than 32 ETH
-            // We exempt the balance up to 32 ETH, happens only once.
+            // an healthy exit can be slightly lower than DEPOSIT_SIZE ETH
+            // We exempt the balance up to DEPOSIT_SIZE ETH, happens only once.
             // !withdrawn prevents this logic being reused to not pay the fee on rewards
-            uint256 exemption = nonExemptBalance > 32 ether ? 32 ether : nonExemptBalance;
+            uint256 exemption = nonExemptBalance > depositSize ? depositSize : nonExemptBalance;
             nonExemptBalance -= exemption;
             stakingContract.toggleWithdrawnFromPublicKeyRoot(_publicKeyRoot);
         }

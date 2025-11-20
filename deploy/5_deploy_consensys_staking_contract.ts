@@ -1,4 +1,4 @@
-import { getContractAddress } from "ethers/lib/utils";
+import { getContractAddress, parseUnits } from "ethers/lib/utils";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { isDeployed } from "../ts_utils/index";
@@ -138,7 +138,7 @@ const func: DeployFunction = async function ({
   });
 
   const stakingContract = await ethers.getContractAt("StakingContract", stakingContractDeployment.address);
-
+  const DEPOSIT_SIZE = parseUnits("128", "ether");
   const initStaking_1 = await stakingContract.initialize_1(
     admin,
     treasury,
@@ -148,6 +148,7 @@ const func: DeployFunction = async function ({
     feeRecipientDeployment.address,
     getFeeBps(network.name),
     getOperatorFeeBps(network.name),
+    DEPOSIT_SIZE,
     getMaxFeeBps(network.name),
     getMaxOperatorFeeBps(network.name),
   );

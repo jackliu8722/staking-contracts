@@ -2,6 +2,7 @@
 pragma solidity >=0.8.10;
 
 import "./libs/BytesLib.sol";
+import "./libs/Uint256Lib.sol";
 import "./interfaces/IFeeRecipient.sol";
 import "./interfaces/IDepositContract.sol";
 import "./libs/StakingContractStorageLib.sol";
@@ -18,13 +19,14 @@ contract StakingContract {
     uint256 internal constant CONSENSUS_LAYER_SALT_PREFIX = 1;
     uint256 public constant SIGNATURE_LENGTH = 96;
     uint256 public constant PUBLIC_KEY_LENGTH = 48;
-    uint256 public constant DEPOSIT_SIZE = 32 ether;
+    uint256 public constant DEPOSIT_SIZE = 128 ether;
     // this is the equivalent of Uint256Lib.toLittleEndian64(DEPOSIT_SIZE / 1000000000 wei);
     uint256 constant DEPOSIT_SIZE_AMOUNT_LITTLEENDIAN64 =
-        0x0040597307000000000000000000000000000000000000000000000000000000;
+        0x000065cd1d000000000000000000000000000000000000000000000000000000;
+        
     uint256 internal constant BASIS_POINTS = 10_000;
-    uint256 internal constant WITHDRAWAL_CREDENTIAL_PREFIX_01 =
-        0x0100000000000000000000000000000000000000000000000000000000000000;
+    uint256 internal constant WITHDRAWAL_CREDENTIAL_PREFIX_02 =
+        0x0200000000000000000000000000000000000000000000000000000000000000;
 
     error Forbidden();
     error InvalidFee();
@@ -52,6 +54,7 @@ contract StakingContract {
     error PublicKeyNotInContract();
     error AddressSanctioned(address sanctionedAccount);
     error AddressBlocked(address blockedAccount);
+    error InvalidDepositSize();
 
     event Deposit(address indexed caller, address indexed withdrawer, bytes publicKey, bytes signature);
     event ValidatorKeysAdded(uint256 indexed operatorIndex, bytes publicKeys, bytes signatures);
@@ -115,7 +118,7 @@ contract StakingContract {
         ];
 
         if (operatorInfo.deactivated) {
-            revert Deactivated();
+            revert Deactivated(); 
         }
 
         if (msg.sender != operatorInfo.feeRecipient) {
@@ -153,6 +156,7 @@ contract StakingContract {
         address _feeRecipientImplementation,
         uint256 _globalFee,
         uint256 _operatorFee,
+        uint256 _depositSize,
         uint256 globalCommissionLimitBPS,
         uint256 operatorCommissionLimitBPS
     ) external init(1) {
@@ -169,6 +173,11 @@ contract StakingContract {
             revert InvalidFee();
         }
         StakingContractStorageLib.setOperatorFee(_operatorFee);
+
+        if (_depositSize < 32 ether) {
+            revert InvalidDepositSize();
+        }
+        StakingContractStorageLib.setDepositSize(_depositSize);
 
         _checkAddress(_elDispatcher);
         StakingContractStorageLib.setELDispatcher(_elDispatcher);
@@ -233,6 +242,11 @@ contract StakingContract {
     /// @notice Retrieve the operator fee
     function getOperatorFee() external view returns (uint256) {
         return StakingContractStorageLib.getOperatorFee();
+    }
+
+    /// @notice Retrieve the deposit size
+    function getDepositSize() external view returns (uint256) {
+        return StakingContractStorageLib.getDepositSize();
     }
 
     /// @notice Compute the Execution Layer Fee recipient address for a given validator public key
@@ -858,7 +872,7 @@ contract StakingContract {
     }
 
     function _addressToWithdrawalCredentials(address _recipient) internal pure returns (bytes32) {
-        return bytes32(uint256(uint160(_recipient)) + WITHDRAWAL_CREDENTIAL_PREFIX_01);
+        return bytes32(uint256(uint160(_recipient)) + WITHDRAWAL_CREDENTIAL_PREFIX_02);
     }
 
     function _depositValidatorsOfOperator(uint256 _operatorIndex, uint256 _validatorCount) internal {
@@ -906,16 +920,19 @@ contract StakingContract {
             )
         );
 
+        uint256 depositSize = StakingContractStorageLib.getDepositSize();
+        uint256 depositSizeAmountLittleEndian64 = uint256(bytes32(Uint256Lib.toLittleEndian64(depositSize / 1 gwei)));
+
         bytes32 depositDataRoot = sha256(
             abi.encodePacked(
                 sha256(abi.encodePacked(_pubkeyRoot, _withdrawalCredentials)),
-                sha256(abi.encodePacked(DEPOSIT_SIZE_AMOUNT_LITTLEENDIAN64, signatureRoot))
+                sha256(abi.encodePacked(depositSizeAmountLittleEndian64, signatureRoot))
             )
         );
 
-        uint256 targetBalance = address(this).balance - DEPOSIT_SIZE;
+        uint256 targetBalance = address(this).balance - depositSize;
 
-        IDepositContract(StakingContractStorageLib.getDepositContract()).deposit{value: DEPOSIT_SIZE}(
+        IDepositContract(StakingContractStorageLib.getDepositContract()).deposit{value: depositSize}(
             _publicKey,
             abi.encodePacked(_withdrawalCredentials),
             _signature,
@@ -937,11 +954,12 @@ contract StakingContract {
             revert DepositsStopped();
         }
         _revertIfSanctionedOrBlocked(msg.sender);
-        if (msg.value == 0 || msg.value % DEPOSIT_SIZE != 0) {
+        uint256 depositSize = StakingContractStorageLib.getDepositSize();
+        if (msg.value == 0 || msg.value % depositSize != 0) {
             revert InvalidDepositValue();
         }
         uint256 totalAvailableValidators = StakingContractStorageLib.getTotalAvailableValidators();
-        uint256 depositCount = msg.value / DEPOSIT_SIZE;
+        uint256 depositCount = msg.value / depositSize;
         if (depositCount > totalAvailableValidators) {
             revert NotEnoughValidators();
         }

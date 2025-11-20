@@ -436,4 +436,18 @@ library StakingContractStorageLib {
             p.slot := slot
         }
     }
+
+    /* ========================================
+    ===========================================
+    =========================================*/
+
+    bytes32 internal constant DEPOSIT_SIZE_SLOT = keccak256("StakingContract.depositSize");
+
+    function getDepositSize() internal view returns (uint256) {
+        return getUint256(DEPOSIT_SIZE_SLOT);
+    }
+
+    function setDepositSize(uint256 _depositSize) internal {
+        setUint256(DEPOSIT_SIZE_SLOT, _depositSize);
+    }
 }

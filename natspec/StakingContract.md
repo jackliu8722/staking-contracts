@@ -280,6 +280,23 @@ Compute the Consensus Layer Fee recipient address for a given validator public k
 |---|---|---|
 | _0 | address | undefined |
 
+### getDepositSize
+
+```solidity
+function getDepositSize() external view returns (uint256)
+```
+
+Retrieve the deposit size
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
 ### getDepositsStopped
 
 ```solidity
@@ -593,7 +610,7 @@ Return true if the validator already went through the exit logicIn case the vali
 ### initialize_1
 
 ```solidity
-function initialize_1(address _admin, address _treasury, address _depositContract, address _elDispatcher, address _clDispatcher, address _feeRecipientImplementation, uint256 _globalFee, uint256 _operatorFee, uint256 globalCommissionLimitBPS, uint256 operatorCommissionLimitBPS) external nonpayable
+function initialize_1(address _admin, address _treasury, address _depositContract, address _elDispatcher, address _clDispatcher, address _feeRecipientImplementation, uint256 _globalFee, uint256 _operatorFee, uint256 _depositSize, uint256 globalCommissionLimitBPS, uint256 operatorCommissionLimitBPS) external nonpayable
 ```
 
 
@@ -612,6 +629,7 @@ function initialize_1(address _admin, address _treasury, address _depositContrac
 | _feeRecipientImplementation | address | undefined |
 | _globalFee | uint256 | undefined |
 | _operatorFee | uint256 | undefined |
+| _depositSize | uint256 | undefined |
 | globalCommissionLimitBPS | uint256 | undefined |
 | operatorCommissionLimitBPS | uint256 | undefined |
 
@@ -1339,6 +1357,17 @@ error InvalidArgument()
 
 ```solidity
 error InvalidCall()
+```
+
+
+
+
+
+
+### InvalidDepositSize
+
+```solidity
+error InvalidDepositSize()
 ```
 
 

@@ -155,6 +155,7 @@ contract StakingContractTest is Test {
             feeRecipientImpl,
             1000,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -217,6 +218,7 @@ contract StakingContractTest is Test {
             address(0),
             1000,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -838,6 +840,7 @@ contract StakingContractInitializationTest is Test {
             address(102),
             10001,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -852,6 +855,7 @@ contract StakingContractInitializationTest is Test {
             address(102),
             10000,
             10001,
+            32 ether,
             2000,
             5000
         );
@@ -866,6 +870,7 @@ contract StakingContractInitializationTest is Test {
             address(102),
             2000,
             5000,
+            32 ether,
             10001,
             5000
         );
@@ -880,6 +885,7 @@ contract StakingContractInitializationTest is Test {
             address(102),
             2000,
             5000,
+            32 ether,
             2000,
             10001
         );
@@ -897,6 +903,7 @@ contract StakingContractInitializationTest is Test {
             address(102),
             1000,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -948,6 +955,7 @@ contract StakingContractOperatorTest is Test {
             address(102),
             1000,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -1002,6 +1010,7 @@ contract StakingContractDistributionTest is Test {
             address(102),
             1000,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -1133,6 +1142,7 @@ contract StakingContractOneValidatorTest is Test {
             address(feeRecipientImpl),
             1000,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -1169,7 +1179,7 @@ contract StakingContractOneValidatorTest is Test {
         bytes memory expectedWithdrawalCredentials = abi.encodePacked(
             bytes32(
                 uint256(uint160(stakingContract.getCLFeeRecipient(PUBKEY_1))) +
-                    0x0100000000000000000000000000000000000000000000000000000000000000
+                    0x0200000000000000000000000000000000000000000000000000000000000000
             )
         );
         vm.expectEmit(true, true, true, true);
@@ -1907,6 +1917,7 @@ contract StakingContractBehindProxyTest is Test {
             address(feeRecipientImpl),
             1000,
             2000,
+            32 ether,
             2000,
             5000
         );
@@ -1945,7 +1956,7 @@ contract StakingContractBehindProxyTest is Test {
         bytes memory expectedWithdrawalCredentials = abi.encodePacked(
             bytes32(
                 uint256(uint160(stakingContract.getCLFeeRecipient(PUBKEY_1))) +
-                    0x0100000000000000000000000000000000000000000000000000000000000000
+                    0x0200000000000000000000000000000000000000000000000000000000000000
             )
         );
         vm.expectEmit(true, true, true, true);

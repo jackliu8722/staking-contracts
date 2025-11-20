@@ -56,6 +56,10 @@ contract StakingContractMock {
     }
 
     function toggleWithdrawnFromPublicKeyRoot(bytes32) external pure {}
+
+    function getDepositSize() external view returns (uint256) {
+        return 32 ether;
+    }
 }
 
 contract ConsensusLayerFeeDispatcherTest is Test {
