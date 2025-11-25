@@ -10,23 +10,6 @@ You can use this contract to store validator keys and have users fund them and t
 
 ## Methods
 
-### DEPOSIT_SIZE
-
-```solidity
-function DEPOSIT_SIZE() external view returns (uint256)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
 ### PUBLIC_KEY_LENGTH
 
 ```solidity

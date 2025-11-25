@@ -6,7 +6,7 @@ import "./interfaces/IStakingContractFeeDetails.sol";
 import "./interfaces/IFeeDispatcher.sol";
 
 /// @title Consensus Layer Fee Recipient
-/// @author Kiln
+/// @author Kdv
 /// @notice This contract can be used to receive fees from a validator and split them with a node operator
 contract ConsensusLayerFeeDispatcher is IFeeDispatcher {
     using DispatchersStorageLib for bytes32;

@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "./interfaces/ISanctionsOracle.sol";
 
 /// @title Ethereum Staking Contract
-/// @author Kiln
+/// @author Kdv
 /// @notice You can use this contract to store validator keys and have users fund them and trigger deposits.
 contract StakingContract {
     using StakingContractStorageLib for bytes32;
@@ -19,10 +19,10 @@ contract StakingContract {
     uint256 internal constant CONSENSUS_LAYER_SALT_PREFIX = 1;
     uint256 public constant SIGNATURE_LENGTH = 96;
     uint256 public constant PUBLIC_KEY_LENGTH = 48;
-    uint256 public constant DEPOSIT_SIZE = 128 ether;
+    // uint256 public constant DEPOSIT_SIZE = 128 ether;
     // this is the equivalent of Uint256Lib.toLittleEndian64(DEPOSIT_SIZE / 1000000000 wei);
-    uint256 constant DEPOSIT_SIZE_AMOUNT_LITTLEENDIAN64 =
-        0x000065cd1d000000000000000000000000000000000000000000000000000000;
+    // uint256 constant DEPOSIT_SIZE_AMOUNT_LITTLEENDIAN64 =
+    //     0x000065cd1d000000000000000000000000000000000000000000000000000000;
         
     uint256 internal constant BASIS_POINTS = 10_000;
     uint256 internal constant WITHDRAWAL_CREDENTIAL_PREFIX_02 =
